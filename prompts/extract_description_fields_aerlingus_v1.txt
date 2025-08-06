@@ -1,0 +1,143 @@
+You are an expert in aircraft maintenance data extraction. Extract the following standardized fields from each maintenance description provided. 
+
+FIELD IDENTIFICATION GUIDANCE:
+{{
+  "reference": "Look for AMM, SB, R330, procedure codes, or any technical reference",
+  "part_number": "Look for P/N, PN:, part number patterns (alphanumeric with dashes/letters)",
+  "serial_number": "Look for S/N, SN:, serial number patterns (alphanumeric)",
+  "component": "Any aircraft component, system, or part mentioned",
+  "position": "Aircraft position codes, engine numbers, wing locations, or any position reference",
+  "maintenance_type": "INSPECTION, SERVICING, REPLACEMENT, REPAIR, FINDING, or any maintenance action",
+  "taskcard": "Look for TASKCARD followed by any code format (ALT-, ZL-, numeric, etc.)",
+  "finding": "Look for finding identifiers (NRC, finding numbers, defect codes, etc.)",
+  "action": "Any action described (performed, found, inspected, replaced, etc.)",
+  "personnel": "Names, signatures, or personnel codes mentioned",
+  "corrective_action": "Actions taken to fix issues or defects"
+}}
+
+FLEXIBLE PATTERNS - Extract any similar format:
+- reference_formats: AMM 78-32-00, R330-55-2005, SB A330-55-3039, OW/MPD, THRUST RV 33F
+- part_number_formats: 683L248G03, 3505468-6, CF6-80E1A4, any alphanumeric with dashes
+- serial_number_formats: R556-311, GRTA0635, 811615, any alphanumeric sequence
+- component_formats: THRUST REVERSER, RH WING, STARTER, ENGINE, FLAP TRACK FAIRING, any aircraft part
+- position_formats: NO1ENG, NO2ENG, 4120KS1, RH WING, LH WING, any position indicator
+- taskcard_formats: ALT-25-0034, ZL-531-01-1, any code after TASKCARD
+- finding_formats: NRC, NRC N°105019, NRC1029, any finding identifier
+- action_formats: INSPECTION, SERVICING, REPLACEMENT, FOUND INOP, PERFORMED, any action verb
+
+EXTRACTION EXAMPLES:
+
+Example 1:
+Text: ENGINE STARTER PERFORM ON PN:3505468-6 SN:GRTA0635 SERVICING (STARTER-801100-G1-1- OIL CHANGE)
+Extracted: {{
+  "maintenance_type": "SERVICING",
+  "component": "ENGINE STARTER",
+  "part_number": "3505468-6",
+  "serial_number": "GRTA0635",
+  "action": "OIL CHANGE",
+  "reference": "STARTER-801100-G1-1"
+}}
+
+Example 2:
+Text: FINDING (NRC) TASKCARD ZL-531-01-1 (04) / ITEM 1 NRC N°105019 RH WING DENT FOUND DURING INSPECTION
+Extracted: {{
+  "maintenance_type": "FINDING",
+  "component": "RH WING",
+  "finding": "NRC N°105019",
+  "taskcard": "ZL-531-01-1",
+  "position": "RH WING",
+  "action": "DENT FOUND DURING INSPECTION",
+  "finding_related": true,
+  "failure_description": "DENT FOUND"
+}}
+
+Example 3:
+Text: THRUST RV 33F-FIRESHIELD/SEALS-GVI-INSPECTION FLAP TRACK FAIRING N°4 GALMAR
+Extracted: {{
+  "maintenance_type": "INSPECTION",
+  "component": "FLAP TRACK FAIRING",
+  "position": "N°4",
+  "action": "FIRESHIELD/SEALS INSPECTION",
+  "reference": "THRUST RV 33F-FIRESHIELD/SEALS-GVI",
+  "personnel": "GALMAR"
+}}
+
+CRITICAL EXTRACTION RULES:
+- Extract EXACTLY what appears in the text, never use example values
+- Be flexible with formats - adapt to what you see in the actual text
+- For taskcard: Extract any code that follows "TASKCARD" regardless of format
+- For finding: Extract any finding identifier, number, or code mentioned
+- For component: Extract any aircraft part, system, or component mentioned
+- For personnel: Extract names, signatures, or codes at the end of descriptions
+- For position: Extract any location reference (wing, engine, numbered positions)
+- If a field cannot be found in the text, set it to null
+- Do not assume or infer values - only extract what is explicitly written
+- Boolean fields (finding_related) should be true if "FINDING" appears anywhere in text
+- Maintain original formatting and capitalization for all extracted values
+- Look for variations in field formats (P/N vs PN:, S/N vs SN:, etc.)
+
+REQUIRED FIELDS (must be extracted for every description):
+- description_id: Unique identifier for the maintenance description
+- maintenance_type: Type of maintenance (inspection, servicing, replacement, repair, finding)
+- component: Main component or system being serviced
+- part_number: Part number of the component
+- serial_number: Serial number of the component/part
+- position: Position on aircraft (left, right, engine number, etc.)
+- action: Specific action taken during maintenance
+- result: Outcome of the maintenance action
+- reference: Reference to procedures, task cards, engineering orders
+- location: Location where maintenance was performed
+- date: Date when maintenance was performed
+
+ADDITIONAL FIELDS (extract if available):
+- finding: Specific finding number or identifier
+- taskcard: Task card number or identifier
+- finding_related: Whether this is related to a finding or defect
+- task_type: Type of task being performed
+- failure_description: Description of any failure or issue found
+- corrective_action: Corrective action taken to address the issue
+- engineering_order: Engineering order number if applicable
+- eo_revision: Engineering order revision number
+- task: Specific task or procedure being performed
+- instructions: Detailed instructions or steps taken
+- reporting: Any reporting requirements or numbers
+- personnel: Personnel involved in maintenance
+- findings: Any findings or issues identified
+- additional_notes: Additional notes or comments
+
+Descriptions to parse:
+{description}
+
+Return a JSON array with one object per description. Each object must contain ALL required fields and any available additional fields:
+
+[
+  {{{{
+    "description_id": "extracted_or_null",
+    "maintenance_type": "extracted_or_null", 
+    "component": "extracted_or_null",
+    "part_number": "extracted_or_null",
+    "serial_number": "extracted_or_null",
+    "position": "extracted_or_null",
+    "action": "extracted_or_null",
+    "result": "extracted_or_null",
+    "reference": "extracted_or_null",
+    "location": "extracted_or_null",
+    "date": "extracted_or_null",
+    "finding": "extracted_or_null",
+    "taskcard": "extracted_or_null",
+    "finding_related": false,
+    "task_type": "extracted_or_null",
+    "failure_description": "extracted_or_null",
+    "corrective_action": "extracted_or_null",
+    "engineering_order": "extracted_or_null",
+    "eo_revision": "extracted_or_null",
+    "task": "extracted_or_null",
+    "instructions": "extracted_or_null",
+    "reporting": "extracted_or_null",
+    "personnel": "extracted_or_null",
+    "findings": [],
+    "additional_notes": "extracted_or_null"
+  }}}}
+]
+
+Return ONLY valid JSON without markdown, code blocks, or explanations.

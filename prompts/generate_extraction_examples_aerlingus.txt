@@ -1,0 +1,47 @@
+You are an expert in aircraft maintenance data analysis. Analyze the following maintenance descriptions and create detailed extraction examples that show how to identify and extract structured fields from similar descriptions.
+
+Your task:
+1. Analyze the patterns in the provided descriptions
+2. Identify common field types and their formats
+3. Create concrete examples showing field extraction
+4. Focus on realistic examples that demonstrate field identification
+
+Descriptions to analyze:
+{description}
+
+Create detailed extraction examples in the following JSON format:
+
+{{
+  "extraction_patterns": {{
+    "reference_formats": ["AMM 78-32-00", "R330-55-2005", "SB A330-55-3039"],
+    "part_number_formats": ["683L250G04", "3505468-4", "CF6-80E1A4B"],
+    "serial_number_formats": ["R556-597", "A5760", "811786"],
+    "component_formats": ["THRUST REVERSER, RH", "STARTER, ENGINE", "POWER PLANT"],
+    "position_formats": ["4120KS2", "NO1ENG", "17WL"],
+    "action_formats": ["INSPECTION", "SERVICING", "REPLACEMENT"]
+  }},
+  "example_extractions": [
+    {{
+      "sample_text": "THRUST RV 33F-FIRE PROTECTION COAT-GVI-INSPECTION of THRUST REVERSER P/N 683L250G04 S/N R556-597 POSITION 4120KS2",
+      "extracted_fields": {{
+        "maintenance_type": "INSPECTION",
+        "component": "THRUST REVERSER",
+        "part_number": "683L250G04",
+        "serial_number": "R556-597",
+        "position": "4120KS2",
+        "action": "FIRE PROTECTION COATING INSPECTION",
+        "reference": "THRUST RV 33F-FIRE PROTECTION COAT-GVI"
+      }}
+    }}
+  ],
+  "field_identification_rules": {{
+    "reference": "Look for AMM, SB, R330, procedure codes",
+    "part_number": "Look for P/N followed by alphanumeric code",
+    "serial_number": "Look for S/N followed by alphanumeric code",
+    "component": "Major aircraft component names",
+    "position": "Aircraft position codes or engine numbers",
+    "maintenance_type": "INSPECTION, SERVICING, REPLACEMENT, REPAIR"
+  }}
+}}
+
+Generate comprehensive extraction examples based on the provided descriptions. Return ONLY valid JSON.

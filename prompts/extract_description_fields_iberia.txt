@@ -1,0 +1,80 @@
+Extract aircraft maintenance details from each numbered description. Return a SINGLE JSON OBJECT where keys are description numbers (as strings) and values are detail objects.
+
+KEYS FOR EACH OBJECT:
+- taskcard: String (e.g., 'ZL-151-02-2 (4)')
+- work_order: String
+- location: String
+- panel_code: String
+- part_numbers: Array of strings
+- amm_tasks: Array of objects with {{task, description}}
+- amm_revisions: Array of objects with {{task, revision}}
+- actions: Object with boolean flags for:
+    send_to_workshop
+    damage_out_of_limits
+    supply_new_material
+- finding: String
+- item: String
+- fin: String
+- serial_number: String (nullable)
+- repair_reference: String (nullable)
+
+EXAMPLE INPUT:
+FINDING (NRC) TASKCARD ZL-151-02-2 (4) / ITEM-1WO8019242    AFT CARGO: IN BAD CONDITION SIDEWALLPANEL 152NW  P/NG2557685700000AMM TASK 25-53-00-000-801-AREMOVAL OF THE CEILING PANELS, THEPARTITION PANELS AND THE SIDEWALLPANELS IN THE AFT CARGO COMPARTMENTSEND TO WORKSHOP IAW WRFAMM TASK 25-53-00-400-801-AINSTALLATION OF THE CEILING PANELS, THEPARTITION PANELS AND THESIDEWALL PANELS IN THE AFT CARGO COMPARTMENTWO8019242    AFT CARGO: IN BAD CONDITION SIDEWALLPANEL 152NW  P/NG2557676800000:FAPE3AMM TASK 25-53-00-000-801-AREMOVAL OF THE CEILING PANELS, THEPARTITION PANELS AND THE SIDEWALLPANELS IN THE AFT CARGO COMPARTMENTDAMAGES OUT OF LIMITS IAW AMM 25-50-00-283 REV 42SUPPLY A NEW PANELAMM TASK 25-53-00-400-801-AINSTALLATION OF THE CEILING PANELS, THEPARTITION PANELS AND THESIDEWALL PANELS IN THE AFT CARGO COMPARTMENT
+
+EXAMPLE OUTPUT:
+{{
+    "1": {{
+        "taskcard": "ZL-151-02-2 (4)",
+        "work_order": "WO8019242",
+        "location": "AFT CARGO",
+        "panel_code": "152NW",
+        "part_numbers": [
+            "G2557685700000",
+            "G2557676800000"
+        ],
+        "amm_tasks": [
+            {{
+                "task": "25-53-00-000-801-A",
+                "description": "REMOVAL OF THE CEILING PANELS, THE PARTITION PANELS AND THE SIDEWALL PANELS IN THE AFT CARGO COMPARTMENT"
+            }},
+            {{
+                "task": "25-53-00-400-801-A",
+                "description": "INSTALLATION OF THE CEILING PANELS, THE PARTITION PANELS AND THE SIDEWALL PANELS IN THE AFT CARGO COMPARTMENT"
+            }}
+        ],
+        "amm_revisions": [
+            {{
+                "task": "25-50-00-283",
+                "revision": "42"
+            }}
+        ],
+        "actions": {{
+            "send_to_workshop": true,
+            "damage_out_of_limits": true,
+            "supply_new_material": true
+        }},
+        "finding": "IN BAD CONDITION SIDEWALL PANEL",
+        "item": "1",
+        "fin": "152NW",
+        "serial_number": null,
+        "repair_reference": "IAW WRF"
+    }}
+}}
+
+PROCESSING RULES:
+1. For taskcards: extract the code after 'TASKCARD'
+2. For work orders: extract the code after 'WO'
+3. For actions: set true if ANY mention appears in description
+4. For revisions: extract ONLY when explicit 'REV' appears
+5. For part numbers: capture alphanumeric sequences after P/N. Ex: P/NG2557685700000AMM -> G2557685700000 and append all part_numbers to the same key 'part_numbers'.
+6. Maintain original description order in output keys
+
+INPUT DESCRIPTIONS:
+{descriptions}
+
+OUTPUT REQUIREMENTS:
+1. Return ONLY valid JSON (no markdown, code blocks, or extra text)
+2. JSON object must use description numbers as keys ("1", "2", etc)
+3. Ensure output is directly loadable with json.loads()
+4. Do NOT include ```json or explanatory text
+5. Maintain exact key names and structure from example

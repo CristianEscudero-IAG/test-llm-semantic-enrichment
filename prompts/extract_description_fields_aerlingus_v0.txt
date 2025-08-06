@@ -1,0 +1,112 @@
+Extract aircraft maintenance details from this description and return ONLY valid JSON.
+You have to parse all common fields related to maintenance.
+
+Parse examples:
+"""
+[{{
+'description': 'AIRWORTHINESS DIRECTIVE MANDATORY: PERFORM S330-71-2036 COMPONENT (ONCE ONLY EO) REV. B',
+'part_number': '277-1100-507',
+'serial_number': '0184001',
+'component': 'INLET COWL - A330/GE',
+'position': 'NO2 ENG',
+'task': 'INSPECTION OF ATTACH BRACKETS',
+'instructions': 'PERFORM INSPECTION IAW ATTACHED EOIS S330-71-2036.',
+'reporting': 'PERFORM REPORTING WITH ATTACHED REPORTING SHEET.',
+'corrective_action': 'IN CASE OF FINDINGS CORRECTIVE ACTION IAW WITH SBC BEFORE FURTHER FLIGHT!'
+}}, {{
+'description': 'THRUST RV 33F-BLOCKER DOOR-DVI-INSPECTION of KIT, FAN REVERSER POS 1 R',
+'part_number': '683L248G03',
+'serial_number': 'R554-006',
+'component': 'KIT, FAN REVERSER POS 1 R/H',
+'position': 'NO1 RH',
+'task': 'INSPECTION (THRUST RV 33F-BLOCKER DOOR-DVI)',
+'reference': 'OW/MPD 783200-G2-1-BLOCKER DOOR-DVI',
+'inspection_type': 'DETAILED INSPECTION - BLOCKER DOORS, HINGES AND ADJACENT STRUCTURE AND FAN REVERSION DEFLECTION',
+'preparation': 'THRUST REVERSER DEPLOYED'
+}}, {{
+'description': 'AIRWORTHINESS DIRECTIVE MANDATORY: PERFORM R330-32-2024 COMPONENT (EO) REV. B',
+'part_number': '55-2105029-00',
+'serial_number': '08MDG4615',
+'component': 'PIN, BOGIE BEAM PIVOT',
+'position': 'RH',
+'highest_part_number': '10-210201-003',
+'highest_serial_number': 'MDL940',
+'highest_position': 'RH',
+'task': 'LANDING GEAR - MAIN AND CENTRE LANDING GEAR BOGIE PIVOT PINS - INSPECTION / REPLACEMENT',
+'reference': 'A330-32-3240/SB (RV.11) / EU-2022-0025/AD (RV.02)',
+'instructions': 'CARRY OUT ACCOMPLISHEMNT INSTRUCTIONS OF EO R330-32-2024 B AS PER EOIS R330-32-2024_REV_B1.'
+}}, {{
+'description': 'REPLACING PSU BATTERIES',
+'part_number': '3214-31',
+'serial_number': '955728',
+'component': 'PSU BATTERY',
+'position': '17WL',
+'installed_in_part_number': '3214-62-10',
+'installed_in_serial_number': '152234',
+'installed_in_component': 'EPSU, 772-338-00 WITH BATTERY',
+'info_triggered_by': '3214-31/955728 T(TEST) RP/MPD (32F&33F) PSU BATTERY 6MO CHK / 3214-31 PSU BATTERY INSHOP CAP. CHECK',
+'notes': []
+}}, {{
+'description': 'THRUST RV 33F-BLOCKER DOOR-DVI-INSPECTION of THRUST REVERSER, LH',
+'part_number': '683L247G05',
+'serial_number': 'R555-596',
+'component': 'THRUST REVERSER, LH',
+'position': '4130KS1',
+'task': 'INSPECTION (THRUST RV 33F-BLOCKER DOOR-DVI)',
+'reference': 'OW/MPD 783200-G2-1-BLOCKER DOOR-DVI',
+'inspection_type': 'DETAILED INSPECTION - BLOCKER DOORS, HINGES AND ADJACENT STRUCTURE AND FAN REVERSION DEFLECTION',
+'preparation': 'THRUST REVERSER DEPLOYED'
+}}, {{
+'description': 'ENGINE STARTER',
+'part_number': '3505468-6',
+'serial_number': 'GRTA5452',
+'component': 'STARTER OUTLINE ENGINE AIR TURBINE',
+'position': 'NO1ENG',
+'task': 'SERVICING (STARTER-801100-G1-1- OIL CHANGE)',
+'reference': 'OW/MPD801100-G1-1-STARTER OIL CHANGE',
+'installed_in_part_number': 'CF6-80E1A4B',
+'installed_in_serial_number': '811785',
+'installed_in_component': 'POWER PLANT, CF6 A4/B POWER'
+}}, {{
+'description': 'INSPECTION OF THE HPV V-LINK INSTALLATION ON GE CF6-80E1 ENGINES',
+'part_number': 'CF6-80E1A4B',
+'serial_number': '811505',
+'component': 'POWER PLANT, CF6 A4/B POWER',
+'position': 'NO1ENG',
+'task': 'INSPECTION OF THE HPV V-LINK INSTALLATION ON GE CF6-80E1 ENGINES',
+'instructions': 'CARY OUT ACCOMPLISHMENT INSTRUCTIONS AS PER ATTACHED ENGINEERING ORDER INSTRUCTION SHEET R330-36-2002 REV. A'
+}}, {{
+'description': 'AIRWORTHINESS DIRECTIVE MANDATORY: PERFORM R330-55-2005 COMPONENT (REPEAT EO) REV. 09',
+'part_number': 'F55280000012',
+'serial_number': 'CC2646',
+'component': 'ELEVATOR L/H',
+'position': 'LH',
+'task': 'STABILIZERS - ELEVATORS - INSPECTION OF ELEVATOR UPPER AND LOWER SKIN PANELS FOR LIQUID INGRESS',
+'instructions': 'CARRY OUT ACCOMPLISHMENT INSTRUCTIONS OF AIRBUS SB A330-55-3039 REV 03 AS PER ATTACHED INSTRUCTION SHEET R330-55-2005 REV 09.',
+'note': 'PERFORM INSPECTIONS ON-WING USING HEATING BLANKETS.'
+}}, {{
+'description': 'THRUST RV 33F-FIRE PROTECTION COAT-GVI-INSPECTION of THRUST REVERSER',
+'part_number': '683L250G04',
+'serial_number': 'R556-597',
+'component': 'THRUST REVERSER, RH',
+'position': '4120KS2',
+'task': 'INSPECTION (THRUST RV 33F-FIRE PROTECTION COAT-GVI)',
+'reference': 'OW/MPD 783200-G7-1-FIRE PRT COAT-GVI',
+'inspection_type': 'FIRE PROTECTION COATING - GVI'
+}}, {{
+'description': 'ENGINE STARTER',
+'part_number': '3505468-4',
+'serial_number': 'A5760',
+'component': 'STARTER, ENGINE',
+'position': 'NO1ENG',
+'task': 'SERVICING (STARTER-801100-G1-1- OIL CHANGE)',
+'reference': 'OW/MPD801100-G1-1-STARTER OIL CHANGE',
+'installed_in_part_number': 'CF6-80E1A4B',
+'installed_in_serial_number': '811786',
+'installed_in_component': 'POWER PLANT, CF6 A4/B POWER'
+}}]
+"""
+
+Descriptions to parse:
+{description}
+Return ONLY valid JSON, without any markdown, code block, or extra text. Do not include ``` or any explanation. Only output the JSON object.
